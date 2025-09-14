@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Editor Pro</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a clean UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        /* Custom styles for better UX */
+        .slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 20px; height: 20px;
+            background: #4f46e5; cursor: pointer;
+            border-radius: 50%; border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        input[type='range']::-webkit-slider-thumb { @apply slider-thumb; }
+        input[type='range']::-moz-range-thumb { @apply slider-thumb; }
+        .control-panel-section { @apply bg-gray-800 p-4 rounded-lg; }
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <div id="app" class="flex flex-col lg:flex-row h-screen overflow-hidden">
+        
+        <!-- Controls Panel (Sidebar) -->
+        <aside class="w-full lg:w-80 bg-gray-900/80 backdrop-blur-sm border-r border-gray-700 p-6 space-y-6 overflow-y-auto">
+            <header class="text-center lg:text-left">
+                <h1 class="text-2xl font-bold text-indigo-400">Photo Editor Pro</h1>
+                <p class="text-sm text-gray-400">Upload, edit, and save your photos.</p>
+            </header>
+
+            <!-- File Upload and Actions -->
+            <div class="space-y-4">
+                <label for="file-upload" class="w-full inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg cursor-pointer hover:bg-indigo-700 transition-colors shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                    <span>Upload Image</span>
+                </label>
+                <input id="file-upload" type="file" class="hidden" accept="image/*">
+                
+                <div class="grid grid-cols-2 gap-3">
+                     <button id="save-btn" class="w-full flex items-center justify-center px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        Save
+                    </button>
+                    <button id="download-btn" class="w-full flex items-center justify-center px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        Publish
+                    </button>
+                </div>
+                 <button id="reset-btn" class="w-full flex items-center justify-center px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"/></svg>
+                    Reset
+                </button>
+            </div>
+
+            <!-- Adjustments Section -->
+            <div class="control-panel-section space-y-4">
+                <h2 class="text-lg font-semibold border-b border-gray-700 pb-2">Adjustments</h2>
+                <div class="adjustment-slider"><label for="brightness" class="block text-sm font-medium text-gray-300">Brightness</label><input id="brightness" type="range" min="0" max="200" value="100" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"></div>
+                <div class="adjustment-slider"><label for="contrast" class="block text-sm font-medium text-gray-300">Contrast</label><input id="contrast" type="range" min="0" max="200" value="100" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"></div>
+                <div class="adjustment-slider"><label for="saturate" class="block text-sm font-medium text-gray-300">Saturation</label><input id="saturate" type="range" min="0" max="200" value="100" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"></div>
+                <div class="adjustment-slider"><label for="blur" class="block text-sm font-medium text-gray-300">Blur</label><input id="blur" type="range" min="0" max="10" value="0" step="0.1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"></div>
+            </div>
+            
+            <!-- Filters & Transform Sections -->
+            <div class="control-panel-section"><h2 class="text-lg font-semibold border-b border-gray-700 pb-2 mb-4">Filters</h2><div class="grid grid-cols-3 gap-2 text-center"><button class="filter-btn p-2 text-sm bg-gray-700 rounded-md hover:bg-indigo-600 transition-colors" data-filter="grayscale" data-value="100">Grayscale</button><button class="filter-btn p-2 text-sm bg-gray-700 rounded-md hover:bg-indigo-600 transition-colors" data-filter="sepia" data-value="100">Sepia</button><button class="filter-btn p-2 text-sm bg-gray-700 rounded-md hover:bg-indigo-600 transition-colors" data-filter="invert" data-value="100">Invert</button></div></div>
+            <div class="control-panel-section"><h2 class="text-lg font-semibold border-b border-gray-700 pb-2 mb-4">Transform</h2><div class="grid grid-cols-2 gap-3"><button id="rotate-left" class="transform-btn flex items-center justify-center p-2 bg-gray-700 rounded-md hover:bg-indigo-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2"><path d="M2.5 2v6h6"/><path d="M2.66 15.57a10 10 0 1 0 .57-8.38"/></svg>Rotate L</button><button id="rotate-right" class="transform-btn flex items-center justify-center p-2 bg-gray-700 rounded-md hover:bg-indigo-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2 scale-x-[-1]"><path d="M2.5 2v6h6"/><path d="M2.66 15.57a10 10 0 1 0 .57-8.38"/></svg>Rotate R</button><button id="flip-horizontal" class="transform-btn flex items-center justify-center p-2 bg-gray-700 rounded-md hover:bg-indigo-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2"><path d="M3 21v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"/><path d="m12 11-4 4-4-4"/><path d="M3 3v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3"/><path d="m12 9 4-4 4 4"/><path d="M12 13V3"/><path d="M12 21v-4"/></svg>Flip H</button><button id="flip-vertical" class="transform-btn flex items-center justify-center p-2 bg-gray-700 rounded-md hover:bg-indigo-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2"><path d="M21 3h-4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="m11 12-4-4-4 4"/><path d="M3 21h4a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H3"/><path d="m9 12 4 4 4-4"/><path d="M13 12H3"/><path d="M21 12h-4"/></svg>Flip V</button></div></div>
+        </aside>
+
+        <!-- Main Content (Image Canvas) -->
+        <main class="flex-1 flex items-center justify-center p-6 bg-gray-800/50">
+            <div id="canvas-container" class="w-full h-full flex items-center justify-center">
+                <canvas id="canvas" class="max-w-full max-h-full rounded-lg shadow-2xl bg-gray-700"></canvas>
+                <div id="placeholder" class="text-center text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    <h3 class="text-xl font-semibold">No Image Selected</h3>
+                    <p>Upload an image to start editing.</p>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Gallery Panel -->
+        <aside class="w-full lg:w-96 bg-gray-900/80 backdrop-blur-sm border-l border-gray-700 p-6 flex flex-col">
+            <h2 class="text-xl font-bold text-indigo-400 mb-4">My Saved Photos</h2>
+            <div id="gallery-container" class="flex-1 overflow-y-auto space-y-4">
+                <p id="gallery-placeholder" class="text-gray-500">Your saved photos will appear here.</p>
+                <!-- Photos will be dynamically inserted here -->
+            </div>
+        </aside>
+    </div>
+
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // DOM Elements
+        const fileUpload = document.getElementById('file-upload');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const placeholder = document.getElementById('placeholder');
+        const downloadBtn = document.getElementById('download-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const galleryContainer = document.getElementById('gallery-container');
+        const galleryPlaceholder = document.getElementById('gallery-placeholder');
+        
+        const sliders = { brightness: document.getElementById('brightness'), contrast: document.getElementById('contrast'), saturate: document.getElementById('saturate'), blur: document.getElementById('blur') };
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const transformButtons = { rotateLeft: document.getElementById('rotate-left'), rotateRight: document.getElementById('rotate-right'), flipHorizontal: document.getElementById('flip-horizontal'), flipVertical: document.getElementById('flip-vertical') };
+
+        // State variables
+        let originalImage = null;
+        let currentImage = new Image();
+        let edits = { brightness: 100, contrast: 100, saturate: 100, blur: 0, grayscale: 0, sepia: 0, invert: 0, rotation: 0, flipH: 1, flipV: 1 };
+        const defaultEdits = { ...edits };
+
+        // Firebase variables
+        let app, db, auth, userId;
+        let photosUnsubscribe = null;
+
+        // --- FIREBASE SETUP ---
+        async function setupFirebase() {
+            try {
+                // These are provided by the environment
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        setupGalleryListener();
+                    } else {
+                         if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                galleryPlaceholder.textContent = "Could not connect to storage.";
+            }
+        }
+
+        // --- GALLERY LOGIC ---
+        function setupGalleryListener() {
+            if (!userId) return;
+            
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const photosCollectionPath = `artifacts/${appId}/users/${userId}/edited_photos`;
+            const q = query(collection(db, photosCollectionPath), orderBy('createdAt', 'desc'));
+
+            if (photosUnsubscribe) photosUnsubscribe(); // Detach previous listener
+
+            photosUnsubscribe = onSnapshot(q, (snapshot) => {
+                galleryContainer.innerHTML = ''; // Clear gallery
+                if (snapshot.empty) {
+                    galleryContainer.appendChild(galleryPlaceholder);
+                } else {
+                    snapshot.docs.forEach(doc => {
+                        createGalleryItem(doc.id, doc.data());
+                    });
+                }
+            }, (error) => {
+                console.error("Error fetching photos:", error);
+                galleryPlaceholder.textContent = "Error loading photos.";
+                galleryContainer.appendChild(galleryPlaceholder);
+            });
+        }
+        
+        function createGalleryItem(id, data) {
+            const item = document.createElement('div');
+            item.className = 'relative rounded-lg overflow-hidden group gallery-item cursor-pointer shadow-md';
+            
+            const img = document.createElement('img');
+            img.src = data.imageDataURL;
+            img.className = 'w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105';
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'gallery-overlay absolute inset-0 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300';
+            
+            const buttonWrapper = document.createElement('div');
+            buttonWrapper.className = 'flex gap-2';
+
+            // Load Button
+            const loadBtn = document.createElement('button');
+            loadBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-1"><path d="M21 4H3v16h18V4z"/><path d="M3 10h18"/><path d="M10 3v18"/></svg>Load`;
+            loadBtn.className = 'flex items-center text-xs px-3 py-1.5 bg-blue-600 rounded hover:bg-blue-700';
+            loadBtn.onclick = () => loadImageFromGallery(data.imageDataURL);
+
+            // Delete Button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-1"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Delete`;
+            deleteBtn.className = 'flex items-center text-xs px-3 py-1.5 bg-red-600 rounded hover:bg-red-700';
+            deleteBtn.onclick = () => deletePhoto(id);
+
+            buttonWrapper.append(loadBtn, deleteBtn);
+            overlay.appendChild(buttonWrapper);
+            item.append(img, overlay);
+            galleryContainer.appendChild(item);
+        }
+
+        async function savePhoto() {
+            if (!userId || !originalImage) return;
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            
+            const imageDataURL = canvas.toDataURL('image/jpeg', 0.9); // Compress for storage
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const photosCollectionPath = `artifacts/${appId}/users/${userId}/edited_photos`;
+
+            try {
+                await addDoc(collection(db, photosCollectionPath), {
+                    imageDataURL,
+                    createdAt: serverTimestamp()
+                });
+            } catch (error) {
+                console.error("Error saving photo: ", error);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save`;
+            }
+        }
+        
+        async function deletePhoto(id) {
+            if (!userId) return;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const docPath = `artifacts/${appId}/users/${userId}/edited_photos/${id}`;
+            await deleteDoc(doc(db, docPath));
+        }
+
+        function loadImageFromGallery(dataURL) {
+             originalImage = new Image();
+             originalImage.onload = () => {
+                currentImage.src = originalImage.src;
+                currentImage.onload = () => {
+                    resetEdits();
+                    enableControls();
+                }
+            };
+            originalImage.src = dataURL;
+        }
+
+
+        // --- IMAGE HANDLING & EDITING LOGIC (Mostly Unchanged) ---
+        fileUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => loadImageFromGallery(event.target.result);
+            reader.readAsDataURL(file);
+        });
+
+        function applyEdits() {
+            if (!originalImage) return;
+            let filterString = `brightness(${edits.brightness}%) contrast(${edits.contrast}%) saturate(${edits.saturate}%) blur(${edits.blur}px) grayscale(${edits.grayscale}%) sepia(${edits.sepia}%) invert(${edits.invert}%)`;
+            const isSideways = edits.rotation % 180 !== 0;
+    
